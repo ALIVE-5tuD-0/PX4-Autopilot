@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# board specific MAVLink startup script.
+#------------------------------------------------------------------------------
+
+# Start MAVLink on the mailbox transmit to Linux Core
+mavlink start -d /dev/ttyACM0

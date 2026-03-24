@@ -62,7 +62,7 @@ public:
 		float bias_var{0.f};
 		float innov{0.f};
 		float innov_var{0.f};
-		float innov_test_ratio{INFINITY};
+		float innov_test_ratio{INFINITY_F};
 	};
 
 	BiasEstimator() {}
