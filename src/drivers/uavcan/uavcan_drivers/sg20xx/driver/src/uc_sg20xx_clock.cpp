@@ -4,7 +4,6 @@
 
 #include <uavcan_sg20xx/clock.hpp>
 #include <uavcan_sg20xx/thread.hpp>
-#include <px4_platform_common/px4_config.h>
 #include "internal.hpp"
 
 #if (UAVCAN_SG20XX_TIMER_NUMBER >= 4) && (UAVCAN_SG20XX_TIMER_NUMBER <= 7)
@@ -17,6 +16,7 @@ extern "C" bool TimerX_IRQHandler(unsigned int *context, FAR void *arg);
 namespace uavcan_sg20xx {
 namespace clock {
 namespace {
+    struct timer_lowerhalf_s *can_timer;
 
     const uavcan::uint32_t USecPerOverflow = 65536;
 
@@ -51,10 +51,12 @@ void init() {
     initialized = true;
 
 #if UAVCAN_SG20XX_NUTTX
-    struct timer_lowerhalf_s *lower = px4_timer_initialize(UAVCAN_SG20XX_TIMER_NUMBER);
+    can_timer = px4_timer_initialize(UAVCAN_SG20XX_TIMER_NUMBER);
 
-    if (lower) {
-        lower->ops->setcallback(lower, TimerX_IRQHandler, NULL);
+    if (can_timer) {
+        can_timer->ops->ioctl(can_timer, SG2002_Timer_Set_Freq, 999999);
+        can_timer->ops->setcallback(can_timer, TimerX_IRQHandler, NULL);
+        can_timer->ops->start(can_timer);
     }
 
 #endif
@@ -81,16 +83,16 @@ static uavcan::uint64_t sampleUtcFromCriticalSection() {
 # if UAVCAN_SG20XX_NUTTX
 
     UAVCAN_ASSERT(initialized);
+    UAVCAN_ASSERT(can_timer == NULL);
 
     volatile uavcan::uint64_t time = time_utc;
-    // volatile uavcan::uint32_t cnt = getreg16(TMR_REG(STM32_BTIM_CNT_OFFSET));
+    volatile uavcan::uint32_t cnt = can_timer->ops->ioctl(can_timer, SG2002_Timer_Get_Current_Count, NULL);
 
-    // if (getreg16(TMR_REG(STM32_BTIM_SR_OFFSET)) & BTIM_SR_UIF) {
-    //     cnt = getreg16(TMR_REG(STM32_BTIM_CNT_OFFSET));
-    //     const uavcan::int32_t add = uavcan::int32_t(USecPerOverflow) +
-    //                     (utc_accumulated_correction_nsec + utc_correction_nsec_per_overflow) / 1000;
-    //     time = uavcan::uint64_t(uavcan::int64_t(time) + add);
-    // }
+    if (getreg16(TMR_REG(STM32_BTIM_SR_OFFSET)) & BTIM_SR_UIF) {
+        cnt = can_timer->ops->ioctl(can_timer, SG2002_Timer_Get_Current_Count, NULL);
+        const uavcan::int32_t add = uavcan::int32_t(USecPerOverflow) + (utc_accumulated_correction_nsec + utc_correction_nsec_per_overflow) / 1000;
+        time = uavcan::uint64_t(uavcan::int64_t(time) + add);
+    }
 
     return time + cnt;
 
@@ -101,6 +103,36 @@ uavcan::uint64_t getUtcUSecFromCanInterrupt() {
     return utc_set ? sampleUtcFromCriticalSection() : 0;
 }
 
+uavcan::MonotonicTime getMonotonic() {
+	uavcan::uint64_t usec = 0;
+	// Scope Critical section
+	{
+		CriticalSectionLocker locker;
+
+		volatile uavcan::uint64_t time = time_mono;
+
+# if UAVCAN_SG20XX_NUTTX
+
+        volatile uavcan::uint32_t cnt = can_timer->ops->ioctl(can_timer, SG2002_Timer_Get_Current_Count, NULL);
+
+		if (getreg16(TMR_REG(STM32_BTIM_SR_OFFSET)) & BTIM_SR_UIF) {
+            cnt = can_timer->ops->ioctl(can_timer, SG2002_Timer_Get_Current_Count, NULL);
+# endif
+			time += USecPerOverflow;
+		}
+
+		usec = time + cnt;
+
+# ifndef NDEBUG
+		static uavcan::uint64_t prev_usec = 0;      // Self-test
+		UAVCAN_ASSERT(prev_usec <= usec);
+		(void)prev_usec;
+		prev_usec = usec;
+# endif
+	} // End Scope Critical section
+
+	return uavcan::MonotonicTime::fromUSec(usec);
+}
 
 
 
@@ -116,7 +148,7 @@ uavcan::uint64_t getUtcUSecFromCanInterrupt() {
 extern "C"
 bool TimerX_IRQHandler(unsigned int *context, FAR void *arg) {
 
-	using namespace uavcan_stm32::clock;
+	using namespace uavcan_sg20xx::clock;
 	UAVCAN_ASSERT(initialized);
 
 	time_mono += USecPerOverflow;

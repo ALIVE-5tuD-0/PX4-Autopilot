@@ -5,12 +5,11 @@
 #pragma once
 
 #include <uavcan/driver/system_clock.hpp>
+#include <px4_platform_common/px4_config.h>
 
-namespace uavcan_sg20xx
-{
+namespace uavcan_sg20xx {
+namespace clock {
 
-namespace clock
-{
 /**
  * Starts the clock.
  * Can be called multiple times, only the first call will be effective.
