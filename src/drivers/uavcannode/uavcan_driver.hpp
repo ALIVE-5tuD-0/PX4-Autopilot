@@ -44,6 +44,8 @@
 #  include <uavcan_stm32/uavcan_stm32.hpp>
 #elif defined(UAVCAN_STM32H7_NUTTX)
 #  include <uavcan_stm32h7/uavcan_stm32h7.hpp>
+#elif defined(UAVCAN_SG20XX_NUTTX)
+#  include <uavcan_sg20xx/uavcan_sg20xx.hpp>
 #else
 #  error "Unsupported driver"
 #endif

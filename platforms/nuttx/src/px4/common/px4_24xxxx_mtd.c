@@ -50,6 +50,8 @@
  * Included Files
  ************************************************************************************/
 
+#if !defined (CONFIG_ARCH_CHIP_SG2002)
+
 #include <px4_platform_common/px4_config.h>
 #include <px4_platform_common/px4_mtd.h>
 #include <px4_platform_common/time.h>
@@ -625,3 +627,5 @@ int at24c_nuke(void)
 {
 	return at24c_eraseall(&g_at24c[0]);
 }
+
+#endif

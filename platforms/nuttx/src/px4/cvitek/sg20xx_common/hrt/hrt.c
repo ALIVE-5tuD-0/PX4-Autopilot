@@ -73,13 +73,13 @@
 /*
  * Queue of callout entries.
  */
-static struct sq_queue_s    callout_queue;
+// static struct sq_queue_s    callout_queue;
 
 /* latency baseline (last compare value applied) */
-static uint16_t             latency_baseline;
+// static uint16_t             latency_baseline;
 
 /* timer count at interrupt (for latency purposes) */
-static uint16_t             latency_actual;
+// static uint16_t             latency_actual;
 
 void hrt_init(void) {
     struct oneshot_lowerhalf_s *lower;
@@ -89,5 +89,5 @@ void hrt_init(void) {
     /* set hrt timer callback */
     // ((struct riscv_mtimer_lowerhalf_s *)lower)->callback = ;
 
-    up_alarm_set_lowerhalt(lower);
+    up_alarm_set_lowerhalf(lower);
 }

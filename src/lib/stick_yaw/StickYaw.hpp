@@ -79,7 +79,7 @@ private:
 	 */
 	float updateYawLock(float yaw, float yawspeed_setpoint, float yaw_setpoint, float yaw_correction_prev) const;
 
-	float _yawspeed_constraint{INFINITY};
+	float _yawspeed_constraint{INFINITY_F};
 
 	DEFINE_PARAMETERS(
 		(ParamFloat<px4::params::MPC_MAN_Y_MAX>) _param_mpc_man_y_max, ///< Maximum yaw speed with full stick deflection

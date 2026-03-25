@@ -63,7 +63,7 @@ px4_add_module(
 	MAIN navigator
 	SRCS ${NAVIGATOR_SOURCES}
 	DEPENDS
-		dataman_client
+#		dataman_client
 		geo
 		adsb
 		geofence_breach_avoidance
