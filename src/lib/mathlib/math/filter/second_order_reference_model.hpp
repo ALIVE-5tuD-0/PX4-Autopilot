@@ -198,7 +198,7 @@ private:
 	T last_rate_sample_{}; // [units/s]
 
 	// Maximum time step [s]
-	float max_time_step_{INFINITY};
+	float max_time_step_{INFINITY_F};
 
 	// The selected time discretization method used for state integration
 	DiscretizationMethod discretization_method_{kBilinear};

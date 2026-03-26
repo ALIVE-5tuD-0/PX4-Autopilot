@@ -224,7 +224,7 @@ void RtlDirect::set_rtl_item()
 				.lat = _global_pos_sub.get().lat,
 				.lon = _global_pos_sub.get().lon,
 				.alt = _rtl_alt,
-				.yaw = _param_wv_en.get() ? NAN : _navigator->get_local_position()->heading,
+				.yaw = _param_wv_en.get() ? static_cast<float>(NAN) : _navigator->get_local_position()->heading,
 			};
 			setLoiterToAltMissionItem(_mission_item, pos_yaw_sp, _navigator->get_default_loiter_rad());
 
@@ -241,12 +241,12 @@ void RtlDirect::set_rtl_item()
 			// For FW flight:set to LOITER_TIME (with 0s loiter time), such that the loiter (orbit) status
 			// can be displayed on groundstation and the WP is accepted once within loiter radius
 			if (_vehicle_status_sub.get().vehicle_type == vehicle_status_s::VEHICLE_TYPE_FIXED_WING) {
-				pos_yaw_sp.yaw = NAN;
+				pos_yaw_sp.yaw = static_cast<float>(NAN);
 				setLoiterHoldMissionItem(_mission_item, pos_yaw_sp, 0.f, _land_approach.loiter_radius_m);
 
 			} else {
 				// already set final yaw if close to destination and weather vane is disabled
-				pos_yaw_sp.yaw = (is_close_to_destination && !_param_wv_en.get()) ? _destination.yaw : NAN;
+				pos_yaw_sp.yaw = (is_close_to_destination && !_param_wv_en.get()) ? _destination.yaw : static_cast<float>(NAN);
 				setMoveToPositionMissionItem(_mission_item, pos_yaw_sp);
 			}
 
@@ -258,7 +258,7 @@ void RtlDirect::set_rtl_item()
 				.lat = _land_approach.lat,
 				.lon = _land_approach.lon,
 				.alt = loiter_altitude,
-				.yaw = !_param_wv_en.get() ? _destination.yaw : NAN, // set final yaw if weather vane is disabled
+				.yaw = !_param_wv_en.get() ? _destination.yaw : static_cast<float>(NAN), // set final yaw if weather vane is disabled
 			};
 
 			setLoiterToAltMissionItem(_mission_item, pos_yaw_sp, _land_approach.loiter_radius_m);
@@ -283,7 +283,7 @@ void RtlDirect::set_rtl_item()
 				.lat = _land_approach.lat,
 				.lon = _land_approach.lon,
 				.alt = loiter_altitude,
-				.yaw = !_param_wv_en.get() ? _destination.yaw : NAN, // set final yaw if weather vane is disabled
+				.yaw = !_param_wv_en.get() ? _destination.yaw : static_cast<float>(NAN), // set final yaw if weather vane is disabled
 			};
 
 			setLoiterHoldMissionItem(_mission_item, pos_yaw_sp, _param_rtl_land_delay.get(), _land_approach.loiter_radius_m);
@@ -308,7 +308,7 @@ void RtlDirect::set_rtl_item()
 
 			PositionYawSetpoint pos_yaw_sp{_destination};
 			pos_yaw_sp.alt = loiter_altitude;
-			pos_yaw_sp.yaw = NAN;
+			pos_yaw_sp.yaw = static_cast<float>(NAN);
 
 			setMoveToPositionMissionItem(_mission_item, pos_yaw_sp);
 
@@ -335,7 +335,7 @@ void RtlDirect::set_rtl_item()
 	case RTLState::MOVE_TO_LAND_HOVER: {
 			PositionYawSetpoint pos_yaw_sp{_destination};
 			pos_yaw_sp.alt = loiter_altitude;
-			pos_yaw_sp.yaw = !_param_wv_en.get() ? _destination.yaw : NAN; // set final yaw if weather vane is disabled
+			pos_yaw_sp.yaw = !_param_wv_en.get() ? _destination.yaw : static_cast<float>(NAN); // set final yaw if weather vane is disabled
 
 			altitude_acceptance_radius = FLT_MAX;
 			setMoveToPositionMissionItem(_mission_item, pos_yaw_sp);
@@ -346,7 +346,7 @@ void RtlDirect::set_rtl_item()
 
 	case RTLState::LAND: {
 			PositionYawSetpoint pos_yaw_sp{_destination};
-			pos_yaw_sp.yaw = !_param_wv_en.get() ? _destination.yaw : NAN; // set final yaw if weather vane is disabled
+			pos_yaw_sp.yaw = !_param_wv_en.get() ? _destination.yaw : static_cast<float>(NAN); // set final yaw if weather vane is disabled
 			setLandMissionItem(_mission_item, pos_yaw_sp);
 
 			_mission_item.land_precision = _param_rtl_pld_md.get();

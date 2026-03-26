@@ -1,5 +1,7 @@
 /****************************************************************************
- * boards/arm/rp2040/raspberrypi-pico/scripts/raspberrypi-pico-flash.ld
+ * boards/risc-v/sg2002/licheerv_nano/scripts/ld.script
+ *
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,97 +19,95 @@
  * under the License.
  *
  ****************************************************************************/
-
 MEMORY
 {
-  flash (rx) : ORIGIN = 0x10000000, LENGTH = 2048K
-  sram (rwx) : ORIGIN = 0x20000000, LENGTH = 264K
+    ram (rwx) : ORIGIN = 0x8FE00000, LENGTH = 2048K  /* 0x8FE00000 ~ 0x81000000 */
 }
 
-OUTPUT_ARCH(arm)
+OUTPUT_ARCH("riscv")
 EXTERN(_vectors)
 ENTRY(_stext)
-EXTERN(bootStr)
 
 SECTIONS
 {
-    .flash_begin : {
-        __flash_binary_start = .;
-    } > flash
+  .text :
+    {
+      _stext = ABSOLUTE(.);
+      KEEP (*(.vectors))
+      *(.text .text.*)
+      *(.gnu.warning)
+      *(.stub)
+      *(.glue_7)
+      *(.glue_7t)
+      *(.jcr)
+      *(.gnu.linkonce.t.*)
+      *(.init)
+      *(.fini)
+      _etext = . ;
+    } > ram
 
-    .boot2 : {
-        __boot2_start__ = .;
-        KEEP (*(.boot2))
-        __boot2_end__ = .;
-    } > flash
+  .rodata : ALIGN(4)
+    {
+      _srodata = . ;
+      *(.rodata .rodata.*)
+      *(.rodata1)
+      *(.gnu.linkonce.r*)
+      _erodata = . ;
+    } > ram
 
-    .text : {
-        _stext = ABSOLUTE(.);
-        *(.vectors)
-        *(.text .text.*)
-        *(.fixup)
-        *(.gnu.warning)
-        *(.rodata .rodata.*)
-        *(.gnu.linkonce.t.*)
-        *(.glue_7)
-        *(.glue_7t)
-        *(.got)
-        *(.gcc_except_table)
-        *(.gnu.linkonce.r.*)
-        _etext = ABSOLUTE(.);
-    } > flash
+  .tdata : ALIGN(4)
+    {
+      _stdata = ABSOLUTE(.);
+      *(.tdata .tdata.* .gnu.linkonce.td.*);
+      _etdata = ABSOLUTE(.);
+    } > ram
 
-    .init_section : {
-        _sinit = ABSOLUTE(.);
-        KEEP (*(.init_array .init_array.*))
-        _einit = ABSOLUTE(.);
-    } > flash
+  .tbss : ALIGN(4)
+    {
+      _stbss = ABSOLUTE(.);
+      *(.tbss .tbss.* .gnu.linkonce.tb.* .tcommon);
+      _etbss = ABSOLUTE(.);
+    } > ram
 
-    .ARM.extab : {
-        *(.ARM.extab*)
-    } > flash
+  _eronly = ABSOLUTE(.);
 
-    __exidx_start = ABSOLUTE(.);
-    .ARM.exidx : {
-        *(.ARM.exidx*)
-    } > flash
-    __exidx_end = ABSOLUTE(.);
+  .data : ALIGN(4)
+    {
+      _sdata = ABSOLUTE(.);
+      *(.data .data.*)
+      *(.data1)
+      *(.gnu.linkonce.d*)
+      . = ALIGN(4);
+      _edata = ABSOLUTE(.);
+    } > ram
 
-    _eronly = ABSOLUTE(.);
+  .bss (NOLOAD): ALIGN(4)
+    {
+      _sbss = ABSOLUTE(.);
+      *(.bss .bss.*)
+      *(.sbss .sbss.*)
+      *(.gnu.linkonce.b*)
+      *(COMMON)
+      . = ALIGN(32);
+      _ebss = ABSOLUTE(.);
+    } > ram
 
-    .ram_vectors (COPY) : {
-        *(.ram_vectors)
-    } > sram
+  .stack_top (NOLOAD):
+    {
+      . = ALIGN(32);
+      _stack_top = ABSOLUTE(.);
+    } > ram
 
-    .data : {
-        _sdata = ABSOLUTE(.);
-        *(.data .data.*)
-        *(.gnu.linkonce.d.*)
-        CONSTRUCTORS
-        . = ALIGN(4);
-        _edata = ABSOLUTE(.);
-    } > sram AT > flash
-
-    .bss : {
-        _sbss = ABSOLUTE(.);
-        *(.bss .bss.*)
-        *(.gnu.linkonce.b.*)
-        *(COMMON)
-        . = ALIGN(4);
-        _ebss = ABSOLUTE(.);
-    } > sram
-
-    /* Stabs debugging sections. */
-    .stab 0 : { *(.stab) }
-    .stabstr 0 : { *(.stabstr) }
-    .stab.excl 0 : { *(.stab.excl) }
-    .stab.exclstr 0 : { *(.stab.exclstr) }
-    .stab.index 0 : { *(.stab.index) }
-    .stab.indexstr 0 : { *(.stab.indexstr) }
-    .comment 0 : { *(.comment) }
-    .debug_abbrev 0 : { *(.debug_abbrev) }
-    .debug_info 0 : { *(.debug_info) }
-    .debug_line 0 : { *(.debug_line) }
-    .debug_pubnames 0 : { *(.debug_pubnames) }
-    .debug_aranges 0 : { *(.debug_aranges) }
+  .stab 0 : { *(.stab) }
+  .stabstr 0 : { *(.stabstr) }
+  .stab.excl 0 : { *(.stab.excl) }
+  .stab.exclstr 0 : { *(.stab.exclstr) }
+  .stab.index 0 : { *(.stab.index) }
+  .stab.indexstr 0 : { *(.stab.indexstr) }
+  .comment 0 : { *(.comment) }
+  .debug_abbrev 0 : { *(.debug_abbrev) }
+  .debug_info 0 : { *(.debug_info) }
+  .debug_line 0 : { *(.debug_line) }
+  .debug_pubnames 0 : { *(.debug_pubnames) }
+  .debug_aranges 0 : { *(.debug_aranges) }
 }

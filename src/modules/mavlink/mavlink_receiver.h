@@ -45,7 +45,6 @@
 
 #include "mavlink_ftp.h"
 #include "mavlink_log_handler.h"
-#include "mavlink_mission.h"
 #include "mavlink_parameters.h"
 #include "MavlinkStatustextHandler.hpp"
 #include "mavlink_timesync.h"
@@ -261,7 +260,6 @@ private:
 
 	MavlinkFTP			_mavlink_ftp;
 	MavlinkLogHandler		_mavlink_log_handler;
-	MavlinkMissionManager		_mission_manager;
 	MavlinkParametersManager	_parameters_manager;
 	MavlinkTimesync			_mavlink_timesync;
 	MavlinkStatustextHandler	_mavlink_statustext_handler;

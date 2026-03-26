@@ -90,7 +90,7 @@ private:
 	matrix::Vector2f _acceleration_setpoint;
 	matrix::Vector2f _acceleration_setpoint_prev;
 
-	float _velocity_constraint{INFINITY};
+	float _velocity_constraint{INFINITY_F};
 
 	DEFINE_PARAMETERS(
 		(ParamFloat<px4::params::MPC_VEL_MANUAL>) _param_mpc_vel_manual,

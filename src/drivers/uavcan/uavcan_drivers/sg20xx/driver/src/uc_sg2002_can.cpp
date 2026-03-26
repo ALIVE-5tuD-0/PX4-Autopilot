@@ -198,10 +198,44 @@ uavcan::int16_t CanDriver::select(uavcan::CanSelectMasks &inout_masks, const uav
     return 1;
 }
 
+int CanDriver::init(const uavcan::uint32_t bitrate, const CanIface::OperatingMode mode, const uavcan::uint32_t enabledInterface) {
+    int res = 0;
 
+    static bool initialized_once = false;
 
+    if (!initialized_once) {
+        initialized_once = true;
+    }
 
+    if (enabledInterface & 1) {
+        iface[0] = &if_;
+        res = if_.init(bitrate, mode);
 
+        if (res < 0) {
+            iface[0] = UAVCAN_NULLPTR;
+            goto fail;
+        }
+    }
 
+    UAVCAN_ASSERT(res >= 0);
+    return res;
+
+fail:
+    UAVCAN_ASSERT(res < 0);
+    return res;
 }
+
+CanIface *CanDriver::getIface(uavcan::uint8_t iface_index) {
+    if (iface_index < UAVCAN_SG20XX_NUM_IFACES) {
+        return iface[iface_index];
+    }
+
+    return UAVCAN_NULLPTR;
+}
+
+bool CanDriver::hadActivity() {
+    return if_.hadActivity();
+}
+
+} // namespace uavcan_sg20xx
 

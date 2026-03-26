@@ -111,7 +111,7 @@ px4_add_module(
 		mavlink_log_handler.cpp
 		mavlink_main.cpp
 		mavlink_messages.cpp
-		mavlink_mission.cpp
+#		mavlink_mission.cpp
 		mavlink_parameters.cpp
 		mavlink_rate_limiter.cpp
 		mavlink_receiver.cpp

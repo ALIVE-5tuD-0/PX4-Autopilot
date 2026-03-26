@@ -112,7 +112,6 @@ MavlinkReceiver::MavlinkReceiver(Mavlink &parent) :
 	_mavlink(parent),
 	_mavlink_ftp(parent),
 	_mavlink_log_handler(parent),
-	_mission_manager(parent),
 	_parameters_manager(parent),
 	_mavlink_timesync(parent)
 {
@@ -388,9 +387,6 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 		}
 
 	}
-
-	/* handle packet with mission manager */
-	_mission_manager.handle_message(msg);
 
 	/* handle packet with parameter component */
 	if (_mavlink.boot_complete()) {
@@ -3388,9 +3384,6 @@ MavlinkReceiver::run()
 		CheckHeartbeats(t);
 
 		if (t - last_send_update > timeout * 1000) {
-			_mission_manager.check_active_mission();
-			_mission_manager.send();
-
 			if (_mavlink.get_mode() != Mavlink::MAVLINK_MODE::MAVLINK_MODE_IRIDIUM) {
 				_parameters_manager.send();
 				_mavlink.set_sending_parameters(_parameters_manager.send_active());
