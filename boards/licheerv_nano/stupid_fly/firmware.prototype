@@ -1,10 +1,10 @@
 {
     "board_id": 42,
-    "magic": "RASPBERRYPIPICO",
-    "description": "Firmware for the raspberry pi Pico board",
+    "magic": "STUPIDFLY",
+    "description": "Firmware for the licheerv nano board",
     "image": "",
     "build_time": 0,
-    "summary": "RaspberrypiPico",
+    "summary": "licheerv_nano",
     "version": "0.1",
     "image_size": 0,
     "image_maxsize": 1032192,

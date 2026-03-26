@@ -26,7 +26,7 @@ MEMORY
 
 OUTPUT_ARCH("riscv")
 EXTERN(_vectors)
-ENTRY(_stext)
+ENTRY(__start)
 
 SECTIONS
 {
@@ -34,7 +34,7 @@ SECTIONS
     {
       _stext = ABSOLUTE(.);
       KEEP (*(.vectors))
-      *(.text .text.*)
+      *(.text .text.__start)
       *(.gnu.warning)
       *(.stub)
       *(.glue_7)

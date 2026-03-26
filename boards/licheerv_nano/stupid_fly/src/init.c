@@ -141,7 +141,7 @@ void sg2002_boardearlyinitialize(void)
 }
 
 /************************************************************************************
- * Name: rp2040_boardinitialize
+ * Name: sg2002_boardinitialize
  *
  * Description:
  *   All architectures must provide the following entry point. This entry point
