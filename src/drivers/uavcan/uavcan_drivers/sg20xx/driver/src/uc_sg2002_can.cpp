@@ -13,8 +13,171 @@
 #endif
 
 namespace uavcan_sg20xx {
-    namespace {
 
+/* handleTxInterrupt */
+
+/* handleRxInterrupt */
+
+/*
+ * CanIface::RxQueue
+ */
+void CanIface::RxQueue::registerOverflow() {
+    if (overflow_cnt_ < 0xFFFFFFFF) {
+        overflow_cnt_++;
     }
+}
+
+void CanIface::RxQueue::push(const uavcan::CanFrame &frame, const uint64_t &utc_usec, uavcan::CanIOFlags flags) {
+    buf_[in_].frame    = frame;
+    buf_[in_].utc_usec = utc_usec;
+    buf_[in_].flags    = flags;
+    in_++;
+
+    if (in_ >= capacity_) {
+        in_ = 0;
+    }
+
+    len_++;
+
+    if (len_ > capacity_) {
+        len_ = capacity_;
+        registerOverflow();
+        out_++;
+
+        if (out_ >= capacity_) {
+            out_ = 0;
+        }
+    }
+}
+
+void CanIface::RxQueue::pop(uavcan::CanFrame &out_frame, uavcan::uint64_t &out_utc_usec, uavcan::CanIOFlags &out_flags) {
+    if (len_ > 0) {
+        out_frame    = buf_[out_].frame;
+        out_utc_usec = buf_[out_].utc_usec;
+        out_flags    = buf_[out_].flags;
+        out_++;
+
+        if (out_ >= capacity_) {
+            out_ = 0;
+        }
+
+        len_--;
+
+    } else {
+        UAVCAN_ASSERT(0);
+    }
+}
+
+void CanIface::RxQueue::reset() {
+    in_ = 0;
+    out_ = 0;
+    len_ = 0;
+    overflow_cnt_ = 0;
+}
+
+uavcan::int16_t CanIface::send(const uavcan::CanFrame &frame, usvcan::MonotonicTime tx_deadline, uavcan::CanIOFlags flags) {
+    if (frame.isErrorFrame() || (frame.dlc > 8)) {
+        return -ErrUnsupportedFrame;
+    }
+
+    /*
+     * Normally we should perform the same check as in @ref canAcceptNewTxFrame(), because
+     * it is possible that the highest-priority frame between select() and send() could have been
+     * replaced with a lower priority one due to TX timeout. But we don't do this check because:
+     *
+     *  - It is a highly unlikely scenario.
+     *
+     *  - Frames do not timeout on a properly functioning bus. Since frames do not timeout, the new
+     *    frame can only have higher priority, which doesn't break the logic.
+     *
+     *  - If high-priority frames are timing out in the TX queue, there's probably a lot of other
+     *    issues to take care of before this one becomes relevant.
+     *
+     *  - It takes CPU time. Not just CPU time, but critical section time, which is expensive.
+     */
+    CriticalSectionLocker lock;
+}
+
+uavcan::int16_t CanIface::receive(uavcan::CanFrame &out_frame, uavcan::MonotonicTime &out_ts_monotonic, uavcan::UtcTime &out_ts_utc, uavcan::CanIOFlags &out_flags) {
+    out_ts_monotonic = clock::getMonotonic();  // High precision is not required for monotonic timestamps
+    uavcan::uint64_t utc_usec = 0;
+
+    {
+        CriticalSectionLocker lock;
+
+        if (rx_queue_.getLength() == 0) {
+            return 0;
+        }
+
+        rx_queue_.pop(out_frame, utc_usec, out_flags);
+    }
+
+    out_ts_utc = uavcan::UtcTime::fromUSec(utc_usec);
+    return 1;
+}
+
+uavcan::int16_t CanIface::configureFilters(const uavcan::CanFilterConfig *filter_configs, uavcan::uint16_t num_configs) {
+
+    return -ErrUnsupportedFrame;
+}
+
+int CanIface::init(const uavcan::uint32_t bitrate, const OperatingMode mode) {
+
+    return -ErrMsrInakNotSet;
+}
+
+void CanIface::discardTimedOutTxMailboxes(uavcan::MonotonicTime current_time) {
+
+}
+
+bool CanIface::canAcceptNewTxFrame(const uavcan::CanFrame &frame) {
+
+}
+
+bool CanIface::isRxBufferEmpty() const {
+    CriticalSectionLocker lock;
+    return (rx_queue_.getLength() == 0);
+}
+
+uavcan::uint64_t CanIface::getErrorCount() const {
+    CriticalSectionLocker lock;
+    return (error_cnt_ + rx_queue_.getOverflowCount());
+}
+
+unsigned CanIface::getRxQueueLength() const {
+    CriticalSectionLocker lock;
+    return rx_queue_.getLength();
+}
+
+bool CanIface::hadActivity() {
+    CriticalSectionLocker lock;
+    const bool ret = had_activity_;
+    had_activity_ = false;
+    return ret;
+}
+
+/* Can Driver */
+uavcan::CanSelectMasks CanDriver::makeSelectMasks(const uavcan::CanFrame * (& pending_tx)[uavcan::MaxCanIfaces]) const {
+    uavcan::CanSelectMasks msk;
+
+    msk.read = if_.isRxBufferEmpty() ? 0 : 1;
+
+    if (pending_tx[0] != UAVCAN_NULLPTR) {
+        msk.write = if_.canAcceptNewTxFrame(*pending_tx[0]) ? 1 : 0;
+    }
+
+    return msk;
+}
+
+bool CanDriver::hasReadableInterfaces() const {
+    return !if_.isRxBufferEmpty();
+}
+
+
+
+
+
+
+
 }
 

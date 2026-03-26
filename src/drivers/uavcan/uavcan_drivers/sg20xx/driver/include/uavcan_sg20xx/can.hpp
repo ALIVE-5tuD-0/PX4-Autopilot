@@ -80,11 +80,9 @@ class CanIface : public uavcan::ICanIface, uavcan::Noncopyable {
     uavcan::uint32_t served_aborts_cnt_;
     BusEvent &update_event_;
     TxItem pending_tx[NumTxMailboxes];
-    uavcanLLuint8_t peak_tx_mailbox_index_;
+    uavcan::uint8_t peak_tx_mailbox_index_;
     const uavcan::uint8_t self_index_;
     bool had_activity_;
-
-    int computeTimings(uavcan::uint32_t target_bitrate, Timings &out_timings);
 
     virtual uavcan::int16_t send(const uavcan::CanFrame &frame, uavcan::MonotonicTime tx_deadline,
                         uavcan::CanIOFlags flags);
@@ -193,7 +191,7 @@ public:
  */
 class CanDriver : public uavcan::ICanDriver, uavcan::Noncopyable {
     BusEvent update_event_;
-    CanIface if0_;
+    CanIface if_;
     uint32_t enabledInterfaces_;
 
     virtual uavcan::int16_t select(uavcan::CanSelectMasks &inout_masks,
@@ -204,9 +202,9 @@ class CanDriver : public uavcan::ICanDriver, uavcan::Noncopyable {
 
 public:
     template <unsigned RxQueueCapacity>
-    CanDriver(CanRxItem(&rx_queue_storage)[UAVCAN_STM32_NUM_IFACES][RxQueueCapacity])
+    CanDriver(CanRxItem(&rx_queue_storage)[UAVCAN_SG20XX_NUM_IFACES][RxQueueCapacity])
         : update_event_(*this)
-        , if0_(bxcan::Can[0], update_event_, 0, rx_queue_storage[0], RxQueueCapacity)
+        , if_(bxcan::Can[0], update_event_, 0, rx_queue_storage[0], RxQueueCapacity)
         , enabledInterfaces_(0x7)
     {
         uavcan::StaticAssert < (RxQueueCapacity <= CanIface::MaxRxQueueCapacity) >::check();

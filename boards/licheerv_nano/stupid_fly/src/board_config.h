@@ -57,6 +57,8 @@
 #define BOARD_ENABLE_CONSOLE_BUFFER
 #define BOARD_CONSOLE_BUFFER_SIZE (1024*3)
 
+#define BOARD_SPI_BUS_MAX_BUS_ITEMS 1
+
 // Has pwm outputs
 #define BOARD_HAS_PWM    0
 

@@ -49,7 +49,7 @@
 #include <float.h>
 #include <sys/stat.h>
 
-# #include <dataman_client/DatamanClient.hpp>
+#include <dataman_client/DatamanClient.hpp>
 #include <drivers/drv_hrt.h>
 #include <lib/geo/geo.h>
 #include <lib/mathlib/mathlib.h>

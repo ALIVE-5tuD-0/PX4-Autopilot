@@ -11,6 +11,43 @@
 namespace uavcan_sg20xx {
 namespace mcp2518fd_can {
 
+    /* CAN FIFO channel */
+    typedef enum {
+        CAN_FIFO_CH0, // CAN_TXQUEUE_CH0
+        CAN_FIFO_CH1,
+        CAN_FIFO_CH2,
+        CAN_FIFO_CH3,
+        CAN_FIFO_CH4,
+        CAN_FIFO_CH5,
+        CAN_FIFO_CH6,
+        CAN_FIFO_CH7,
+        CAN_FIFO_CH8,
+        CAN_FIFO_CH9,
+        CAN_FIFO_CH10,
+        CAN_FIFO_CH11,
+        CAN_FIFO_CH12,
+        CAN_FIFO_CH13,
+        CAN_FIFO_CH14,
+        CAN_FIFO_CH15,
+        CAN_FIFO_CH16,
+        CAN_FIFO_CH17,
+        CAN_FIFO_CH18,
+        CAN_FIFO_CH19,
+        CAN_FIFO_CH20,
+        CAN_FIFO_CH21,
+        CAN_FIFO_CH22,
+        CAN_FIFO_CH23,
+        CAN_FIFO_CH24,
+        CAN_FIFO_CH25,
+        CAN_FIFO_CH26,
+        CAN_FIFO_CH27,
+        CAN_FIFO_CH28,
+        CAN_FIFO_CH29,
+        CAN_FIFO_CH30,
+        CAN_FIFO_CH31,
+        CAN_FIFO_TOTAL_CHANNELS
+    } CAN_FIFO_CHANNEL;
+
     /* SPI instruction */
     constexpr unsigned long cINSTRUCTION_RESET          = 0x00;
     constexpr unsigned long cINSTRUCTION_READ           = 0x03;
@@ -68,43 +105,6 @@ namespace mcp2518fd_can {
     constexpr unsigned long cREGADDR_CRC                = 0xE08;
     constexpr unsigned long cREGADDR_ECCCON             = 0xE0C;
     constexpr unsigned long cREGADDR_ECCSTA             = 0xE10;
-
-    /* CAN FIFO channel */
-    typedef enum {
-        CAN_FIFO_CH0, // CAN_TXQUEUE_CH0
-        CAN_FIFO_CH1,
-        CAN_FIFO_CH2,
-        CAN_FIFO_CH3,
-        CAN_FIFO_CH4,
-        CAN_FIFO_CH5,
-        CAN_FIFO_CH6,
-        CAN_FIFO_CH7,
-        CAN_FIFO_CH8,
-        CAN_FIFO_CH9,
-        CAN_FIFO_CH10,
-        CAN_FIFO_CH11,
-        CAN_FIFO_CH12,
-        CAN_FIFO_CH13,
-        CAN_FIFO_CH14,
-        CAN_FIFO_CH15,
-        CAN_FIFO_CH16,
-        CAN_FIFO_CH17,
-        CAN_FIFO_CH18,
-        CAN_FIFO_CH19,
-        CAN_FIFO_CH20,
-        CAN_FIFO_CH21,
-        CAN_FIFO_CH22,
-        CAN_FIFO_CH23,
-        CAN_FIFO_CH24,
-        CAN_FIFO_CH25,
-        CAN_FIFO_CH26,
-        CAN_FIFO_CH27,
-        CAN_FIFO_CH28,
-        CAN_FIFO_CH29,
-        CAN_FIFO_CH30,
-        CAN_FIFO_CH31,
-        CAN_FIFO_TOTAL_CHANNELS
-    } CAN_FIFO_CHANNEL;
 
     /* CAN Filter Channels */
     typedef enum {
@@ -322,7 +322,7 @@ namespace mcp2518fd_can {
         struct {
             CAN_MSGOBJ_ID id;
             CAN_TX_MSGOBJ_CTRL ctrl;
-            CAN_MSG_TIMESTAMP timeStamp;
+            uint32_t timeStamp;
         } bF;
 
         uint32_t word[3];
@@ -334,7 +334,7 @@ namespace mcp2518fd_can {
         struct {
             CAN_MSGOBJ_ID id;
             CAN_RX_MSGOBJ_CTRL ctrl;
-            CAN_MSG_TIMESTAMP timeStamp;
+            uint32_t timeStamp;
         } bF;
 
         uint32_t word[3];
@@ -346,7 +346,7 @@ namespace mcp2518fd_can {
         struct {
             CAN_MSGOBJ_ID id;
             CAN_TX_MSGOBJ_CTRL ctrl;
-            CAN_MSG_TIMESTAMP timeStamp;
+            uint32_t timeStamp;
         } bF;
 
         uint32_t word[3];
@@ -741,9 +741,9 @@ namespace mcp2518fd_can {
 
     /* System Clock Selection */
     typedef enum {
-        CAN_SYSCLK_40M = MCP2518FD_40MHz,
-        CAN_SYSCLK_20M = MCP2518FD_20MHz,
-        CAN_SYSCLK_10M = MCP2518FD_10MHz,
+        CAN_SYSCLK_40M,
+        CAN_SYSCLK_20M,
+        CAN_SYSCLK_10M,
     } CAN_SYSCLK_SPEED;
 
     /* CLKO Divide */
