@@ -62,6 +62,8 @@
 // Has pwm outputs
 #define BOARD_HAS_PWM    0
 
+#define BOARD_NUMBER_DIGITAL_BRICKS
+
 __BEGIN_DECLS
 
 #ifndef __ASSEMBLY__

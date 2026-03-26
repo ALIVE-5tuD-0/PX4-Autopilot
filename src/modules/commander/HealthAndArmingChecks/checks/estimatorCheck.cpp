@@ -697,7 +697,7 @@ void EstimatorChecks::setModeRequirementFlags(const Context &context, bool pre_f
 
 	// run position and velocity accuracy checks
 	// Check if quality checking of position accuracy and consistency is to be performed
-	const float lpos_eph_threshold = (_param_com_pos_fs_eph.get() < 0) ? INFINITY : _param_com_pos_fs_eph.get();
+	const float lpos_eph_threshold = (_param_com_pos_fs_eph.get() < 0) ? static_cast<float>(INFINITY) : _param_com_pos_fs_eph.get();
 
 	bool xy_valid = lpos.xy_valid;
 	bool v_xy_valid = lpos.v_xy_valid;

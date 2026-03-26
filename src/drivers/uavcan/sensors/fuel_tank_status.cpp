@@ -80,7 +80,7 @@ void UavcanFuelTankStatusBridge::fuel_tank_status_sub_cb(const
 	report.fuel_tank_id = msg.fuel_tank_id;
 
 	// Optional temperature field, in Kelvin, set to NaN if not provided.
-	report.temperature = !PX4_ISFINITE(msg.fuel_temperature) ? NAN : msg.fuel_temperature;
+	report.temperature = !PX4_ISFINITE(msg.fuel_temperature) ? NAN : static_cast<double>(msg.fuel_temperature);
 
 	publish(msg.getSrcNodeID().get(), &report);
 }

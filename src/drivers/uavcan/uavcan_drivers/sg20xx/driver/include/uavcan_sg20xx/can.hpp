@@ -6,6 +6,8 @@
 
 namespace uavcan_sg20xx {
 
+static const uavcan::int16_t ErrBitRateNotDetected      = 1007;
+
 /**
  * RX queue item.
  * The application shall not use this directly.
@@ -103,7 +105,7 @@ public:
     enum { MaxRxQueueCapacity = 254 };
 
     enum OperatingMode {
-        NormaleMode,
+        NormalMode,
         SilentMode};
 
     CanIface(BusEvent &update_event, uavcan::uint8_t self_index,
@@ -116,7 +118,7 @@ public:
         , self_index_(self_index)
         , had_activity_(false)
     {
-        UAVCAN_ASSERT(self_index_ < UAVCAN_STM32_NUM_IFACES);
+        UAVCAN_ASSERT(self_index_ < UAVCAN_SG20XX_NUM_IFACES);
     }
 
     /**
@@ -204,7 +206,7 @@ public:
     template <unsigned RxQueueCapacity>
     CanDriver(CanRxItem(&rx_queue_storage)[UAVCAN_SG20XX_NUM_IFACES][RxQueueCapacity])
         : update_event_(*this)
-        , if_(bxcan::Can[0], update_event_, 0, rx_queue_storage[0], RxQueueCapacity)
+        , if_(update_event_, 0, rx_queue_storage[0], RxQueueCapacity)
         , enabledInterfaces_(0x7)
     {
         uavcan::StaticAssert < (RxQueueCapacity <= CanIface::MaxRxQueueCapacity) >::check();
@@ -228,7 +230,7 @@ public:
 
     virtual CanIface *getIface(uavcan::uint8_t iface_index);
 
-    virtual uavcan::uint8_t getNumIfaces() const { return UAVCAN_STM32_NUM_IFACES; }
+    virtual uavcan::uint8_t getNumIfaces() const { return UAVCAN_SG20XX_NUM_IFACES; }
 
     /**
         * Whether at least one iface had at least one successful IO since previous call of this method.
@@ -246,7 +248,7 @@ public:
  */
 template <unsigned RxQueueCapacity = 128>
 class CanInitHelper {
-    CanRxItem queue_storage_[UAVCAN_STM32_NUM_IFACES][RxQueueCapacity];
+    CanRxItem queue_storage_[UAVCAN_SG20XX_NUM_IFACES][RxQueueCapacity];
 
 public:
     enum { BitRateAutoDetect = 0 };

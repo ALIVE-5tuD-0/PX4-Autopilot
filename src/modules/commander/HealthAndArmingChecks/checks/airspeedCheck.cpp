@@ -58,7 +58,7 @@ void AirspeedChecks::checkAndReport(const Context &context, Report &reporter)
 						  || airspeed_validated.airspeed_source == airspeed_validated_s::SOURCE_SENSOR_2
 						  || airspeed_validated.airspeed_source == airspeed_validated_s::SOURCE_SENSOR_3;
 
-		const float airspeed_calibrated_from_sensor = airspeed_from_sensor ? airspeed_validated.calibrated_airspeed_m_s : NAN;
+		const float airspeed_calibrated_from_sensor = airspeed_from_sensor ? airspeed_validated.calibrated_airspeed_m_s : static_cast<float>(NAN);
 
 		// Maximally allow the airspeed reading to be at FW_AIRSPD_MAX when arming. This is to catch very badly calibrated
 		// airspeed sensors, but also high wind conditions that prevent a forward flight of the vehicle.

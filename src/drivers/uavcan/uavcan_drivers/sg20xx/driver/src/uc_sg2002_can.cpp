@@ -173,6 +173,30 @@ bool CanDriver::hasReadableInterfaces() const {
     return !if_.isRxBufferEmpty();
 }
 
+uavcan::int16_t CanDriver::select(uavcan::CanSelectMasks &inout_masks, const uavcan::CanFrame * (& pending_tx)[uavcan::MaxCanIfaces], const uavcan::MonotonicTime blocking_deadlin) {
+    const uavcan::CanSelectMasks in_masks = inout_masks;
+    const uavcan::MonotonicTime time = clock::getMonotonic();
+
+    /* Check TX timeouts - this may release some TX slots */
+    if_.discardTimedOutTxMailboxes(time);
+
+    {
+        CriticalSectionLocker cs_locker;
+        if_.pollErrorFlagsFromISR();
+    }
+
+    inout_masks = makeSelectMasks(pending_tx);          // Check if we already have some of the requested events
+
+    if ((inout_masks.read  & in_masks.read)  != 0 ||
+        (inout_masks.write & in_masks.write) != 0) {
+        return 1;
+    }
+
+    (void)update_event_.wait(blocking_deadline - time); // Block until timeout expires or any iface updates
+    inout_masks = makeSelectMasks(pending_tx);  // Return what we got even if none of the requested events are set
+
+    return 1;
+}
 
 
 
