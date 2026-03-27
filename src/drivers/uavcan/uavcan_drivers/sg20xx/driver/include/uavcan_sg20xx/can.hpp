@@ -6,7 +6,22 @@
 
 namespace uavcan_sg20xx {
 
-static const uavcan::int16_t ErrBitRateNotDetected      = 1007;
+/**
+ * Driver error codes.
+ * These values can be returned from driver functions negated.
+ */
+//static const uavcan::int16_t ErrUnknown               = 1000; ///< Reserved for future use
+static const uavcan::int16_t ErrNotImplemented          = 1001; ///< Feature not implemented
+static const uavcan::int16_t ErrInvalidBitRate          = 1002; ///< Bit rate not supported
+static const uavcan::int16_t ErrLogic                   = 1003; ///< Internal logic error
+static const uavcan::int16_t ErrUnsupportedFrame        = 1004; ///< Frame not supported (e.g. RTR, CAN FD, etc)
+static const uavcan::int16_t ErrBitRateNotDetected      = 1007; ///< Auto bit rate detection could not be finished
+static const uavcan::int16_t ErrFilterNumConfigs        = 1008; ///< Number of filters is more than supported
+static const uavcan::int16_t ErrMsrInakNotSet           = 1005; ///< INAK bit of the MSR register is not 1
+static const uavcan::int16_t ErrMsrInakNotCleared       = 1006; ///< INAK bit of the MSR register is not 0
+
+
+
 
 /**
  * RX queue item.
@@ -118,7 +133,7 @@ public:
         , self_index_(self_index)
         , had_activity_(false)
     {
-        UAVCAN_ASSERT(self_index_ < UAVCAN_SG20XX_NUM_IFACES);
+        UAVCAN_ASSERT(self_index_ < UAVCAN_STM32_NUM_IFACES);
     }
 
     /**
@@ -198,7 +213,7 @@ class CanDriver : public uavcan::ICanDriver, uavcan::Noncopyable {
 
     virtual uavcan::int16_t select(uavcan::CanSelectMasks &inout_masks,
                         const uavcan::CanFrame * (& pending_tx)[uavcan::MaxCanIfaces],
-                        uavcan::MonotonicTime blocking_deadline);
+                        const uavcan::MonotonicTime blocking_deadline);
 
     static void initOnce();
 
@@ -267,7 +282,7 @@ public:
         * Bitrate value must be positive.
         * @return  Negative value on error; non-negative on success. Refer to constants Err*.
         */
-    int init(uavcan::uint32_t bitrate) { return driver.init(bitrate, CanIface::NormalMode, enabledInterfaces_); }
+    int init(uavcan::uint32_t bitrate) { return driver.init(bitrate, CanIface::OperatingMode::NormalMode, enabledInterfaces_); }
 
     /**
         * This function can either initialize the driver at a fixed bit rate, or it can perform
@@ -282,7 +297,7 @@ public:
     template <typename DelayCallable>
     int init(uavcan::uint32_t &inout_bitrate = BitRateAutoDetect) {
         if (inout_bitrate > 0) {
-            return driver.init(inout_bitrate, CanIface::NormalMode, enabledInterfaces_);
+            return driver.init(inout_bitrate, CanIface::OperatingMode::NormalMode, enabledInterfaces_);
 
         } else {
             static const uavcan::uint32_t StandardBitRates[] = {

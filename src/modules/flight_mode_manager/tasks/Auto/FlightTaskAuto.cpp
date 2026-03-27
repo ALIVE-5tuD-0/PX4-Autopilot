@@ -314,13 +314,12 @@ void FlightTaskAuto::_smoothYaw()
 	_yaw_sp_aligned = true;
 
 	if (PX4_ISFINITE(_yaw_setpoint)) {
-		const float yaw_sp_unsmoothed = _yaw_setpoint;
 		_heading_smoothing.update(_yaw_setpoint, _deltatime);
 		_yaw_setpoint = _heading_smoothing.getSmoothedHeading();
 		_yawspeed_setpoint = _heading_smoothing.getSmoothedHeadingRate();
 
 		// The yaw setpoint is aligned when it is within tolerance
-		_yaw_sp_aligned = fabsf(matrix::wrap_pi(yaw_sp_unsmoothed - _yaw_setpoint)) < math::radians(_param_mis_yaw_err.get());
+		_yaw_sp_aligned = false;
 
 	} else {
 		_heading_smoothing.reset(_yaw, 0.f);
@@ -687,7 +686,7 @@ void FlightTaskAuto::_updateTrajConstraints()
 {
 	// update params of the position smoothing
 	_position_smoothing.setMaxAllowedHorizontalError(_param_mpc_xy_err_max.get());
-	_position_smoothing.setVerticalAcceptanceRadius(_param_nav_mc_alt_rad.get());
+	_position_smoothing.setVerticalAcceptanceRadius(0);
 	_position_smoothing.setCruiseSpeed(_mc_cruise_speed);
 	_position_smoothing.setHorizontalTrajectoryGain(_param_mpc_xy_traj_p.get());
 	_position_smoothing.setTargetAcceptanceRadius(_target_acceptance_radius);

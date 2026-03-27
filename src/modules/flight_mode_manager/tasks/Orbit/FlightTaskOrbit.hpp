@@ -140,8 +140,6 @@ private:
 		(ParamFloat<px4::params::MPC_YAWRAUTO_MAX>) _param_mpc_yawrauto_max,
 		(ParamFloat<px4::params::MPC_YAWRAUTO_ACC>) _param_mpc_yawrauto_acc,
 		(ParamFloat<px4::params::MPC_XY_TRAJ_P>) _param_mpc_xy_traj_p,
-		(ParamFloat<px4::params::NAV_MC_ALT_RAD>)
-		_param_nav_mc_alt_rad, //vertical acceptance radius at which waypoints are updated
 		(ParamFloat<px4::params::MPC_XY_ERR_MAX>) _param_mpc_xy_err_max,
 		(ParamFloat<px4::params::MPC_ACC_HOR>) _param_mpc_acc_hor, // acceleration in flight
 		(ParamFloat<px4::params::MPC_JERK_AUTO>) _param_mpc_jerk_auto,

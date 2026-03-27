@@ -10,7 +10,7 @@
  */
 
 namespace GPIO {
-enum Port = {
+enum Port {
     PortA = 0,
     PortB,
     PortC,

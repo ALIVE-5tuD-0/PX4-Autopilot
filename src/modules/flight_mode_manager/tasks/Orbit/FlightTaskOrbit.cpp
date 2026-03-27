@@ -257,7 +257,7 @@ void FlightTaskOrbit::_updateTrajectoryBoundaries()
 {
 	// update params of the position smoothing
 	_position_smoothing.setMaxAllowedHorizontalError(_param_mpc_xy_err_max.get());
-	_position_smoothing.setVerticalAcceptanceRadius(_param_nav_mc_alt_rad.get());
+	_position_smoothing.setVerticalAcceptanceRadius(0);
 	_position_smoothing.setCruiseSpeed(_param_mpc_xy_cruise.get());
 	_position_smoothing.setHorizontalTrajectoryGain(_param_mpc_xy_traj_p.get());
 	_position_smoothing.setTargetAcceptanceRadius(_horizontal_acceptance_radius);
@@ -280,9 +280,7 @@ void FlightTaskOrbit::_updateTrajectoryBoundaries()
 
 bool FlightTaskOrbit::_is_position_on_circle() const
 {
-	return (fabsf(Vector2f(_position - _center).length() - _orbit_radius) < _horizontal_acceptance_radius)
-	       && fabsf(_position(2) - _center(2)) < _param_nav_mc_alt_rad.get();
-
+	return false;
 }
 
 void FlightTaskOrbit::_adjustParametersByStick()

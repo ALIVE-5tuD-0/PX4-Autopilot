@@ -341,6 +341,20 @@ if(CONFIG_ARCH_CHIP_ESP32)
 		)
 else()
 
+if(CONFIG_ARCH_CHIP_SG2002)
+	set(PX4_STARTUP_DIR ${PX4_SOURCE_DIR}/platforms/nuttx/NuttX/nuttx/arch/risc-v/src)
+
+	set(NUTTX_STARTUP_OBJS ${PX4_STARTUP_DIR}/sg2002_head.o )
+
+	execute_process(COMMAND touch ${NUTTX_STARTUP_OBJS}
+	WORKING_DIRECTORY ${PX4_SOURCE_DIR})
+	set_source_files_properties(
+		${NUTTX_STARTUP_OBJS}
+		PROPERTIES
+		EXTERNAL_OBJECT true
+		GENERATED true)
+endif()
+
 	target_link_libraries(nuttx_c INTERFACE nuttx_sched) # nxsched_get_streams
 
 	target_link_libraries(nuttx_arch
@@ -372,6 +386,7 @@ else()
 
 		-Wl,--start-group
 			${nuttx_libs}
+			${NUTTX_STARTUP_OBJS}
 		-Wl,--end-group
 
 		m

@@ -6,6 +6,7 @@ add_compile_options(-Wno-unused-variable)
 add_library(uavcan_sg20xx_driver STATIC
     src/uc_sg20xx_thread.cpp
     src/uc_sg20xx_clock.cpp
+    src/uc_sg2002_can.cpp
     )
 
 add_dependencies(uavcan_sg20xx_driver uavcan)

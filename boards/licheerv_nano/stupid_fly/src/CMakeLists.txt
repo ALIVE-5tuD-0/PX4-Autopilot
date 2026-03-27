@@ -33,11 +33,13 @@
 
 add_library(drivers_board
 	init.c
+	spi.cpp
 )
 
 target_link_libraries(drivers_board
 	PRIVATE
-		nuttx_arch # sdio
-		nuttx_drivers # sdio
+		arch_spi
+		nuttx_arch
+		nuttx_drivers
 		px4_layer
 )

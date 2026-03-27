@@ -25,8 +25,6 @@ MEMORY
 }
 
 OUTPUT_ARCH("riscv")
-EXTERN(_vectors)
-ENTRY(__start)
 
 SECTIONS
 {
@@ -34,7 +32,7 @@ SECTIONS
     {
       _stext = ABSOLUTE(.);
       KEEP (*(.vectors))
-      *(.text .text.__start)
+      *(.text .text.*)
       *(.gnu.warning)
       *(.stub)
       *(.glue_7)
@@ -44,6 +42,12 @@ SECTIONS
       *(.init)
       *(.fini)
       _etext = . ;
+    } > ram
+
+    .init_section : {
+        _sinit = ABSOLUTE(.);
+        KEEP (*(.init_array .init_array.*))
+        _einit = ABSOLUTE(.);
     } > ram
 
   .rodata : ALIGN(4)

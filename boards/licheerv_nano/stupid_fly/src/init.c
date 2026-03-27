@@ -57,42 +57,20 @@
 
 #include <nuttx/board.h>
 #include <nuttx/spi/spi.h>
-#include <nuttx/mmcsd.h>
-#include <nuttx/analog/adc.h>
-#include <nuttx/mm/gran.h>
 
 #include "board_config.h"
 
 #include <arch/board/board.h>
 
 #include <drivers/drv_hrt.h>
-#include <drivers/drv_board_led.h>
 
 #include <systemlib/px4_macros.h>
 
 #include <px4_platform_common/init.h>
-#include <px4_platform/board_dma_alloc.h>
-
-# if defined(FLASH_BASED_PARAMS)
-#  include <parameters/flashparams/flashfs.h>
-#endif
 
 /****************************************************************************
  * Pre-Processor Definitions
  ****************************************************************************/
-
-/**
- * Ideally we'd be able to get these from arm_internal.h,
- * but since we want to be able to disable the NuttX use
- * of leds for system indication at will and there is no
- * separate switch, we need to build independent of the
- * CONFIG_ARCH_LEDS configuration switch.
- */
-__BEGIN_DECLS
-extern void led_init(void);
-extern void led_on(int led);
-extern void led_off(int led);
-__END_DECLS
 
 /****************************************************************************
  * Protected Functions
@@ -192,10 +170,6 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 {
 	px4_platform_init();
 
-	/* initial LED state */
-	drv_led_start();
-	led_on(LED_BLUE);
-
 	/* Configure SPI-based devices */
 
 	// SPI2: MPU9250 and BMP280
@@ -203,7 +177,6 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 
 	if (!spi2) {
 		syslog(LOG_ERR, "[boot] FAILED to initialize SPI port 2\n");
-		led_off(LED_BLUE);
 	}
 
 	/* Default SPI2 to 10MHz and de-assert the known chip selects. */

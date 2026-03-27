@@ -4,7 +4,7 @@
 #include <uavcan_sg20xx/clock.hpp>
 #include "internal.hpp"
 
-#if UAVCAN_STM32_NUTTX
+#if UAVCAN_SG20XX_NUTTX
 # include <nuttx/arch.h>
 # include <nuttx/irq.h>
 # include <arch/board/board.h>
@@ -13,7 +13,9 @@
 #endif
 
 namespace uavcan_sg20xx {
-
+namespace {
+CanIface *iface = UAVCAN_NULLPTR;
+}
 /* handleTxInterrupt */
 
 /* handleRxInterrupt */
@@ -75,7 +77,7 @@ void CanIface::RxQueue::reset() {
     overflow_cnt_ = 0;
 }
 
-uavcan::int16_t CanIface::send(const uavcan::CanFrame &frame, usvcan::MonotonicTime tx_deadline, uavcan::CanIOFlags flags) {
+uavcan::int16_t CanIface::send(const uavcan::CanFrame &frame, uavcan::MonotonicTime tx_deadline, uavcan::CanIOFlags flags) {
     if (frame.isErrorFrame() || (frame.dlc > 8)) {
         return -ErrUnsupportedFrame;
     }
@@ -96,6 +98,8 @@ uavcan::int16_t CanIface::send(const uavcan::CanFrame &frame, usvcan::MonotonicT
      *  - It takes CPU time. Not just CPU time, but critical section time, which is expensive.
      */
     CriticalSectionLocker lock;
+
+    return 0;
 }
 
 uavcan::int16_t CanIface::receive(uavcan::CanFrame &out_frame, uavcan::MonotonicTime &out_ts_monotonic, uavcan::UtcTime &out_ts_utc, uavcan::CanIOFlags &out_flags) {
@@ -127,11 +131,10 @@ int CanIface::init(const uavcan::uint32_t bitrate, const OperatingMode mode) {
 }
 
 void CanIface::discardTimedOutTxMailboxes(uavcan::MonotonicTime current_time) {
-
 }
 
-bool CanIface::canAcceptNewTxFrame(const uavcan::CanFrame &frame) {
-
+bool CanIface::canAcceptNewTxFrame(const uavcan::CanFrame &frame) const {
+    return true;
 }
 
 bool CanIface::isRxBufferEmpty() const {
@@ -173,7 +176,7 @@ bool CanDriver::hasReadableInterfaces() const {
     return !if_.isRxBufferEmpty();
 }
 
-uavcan::int16_t CanDriver::select(uavcan::CanSelectMasks &inout_masks, const uavcan::CanFrame * (& pending_tx)[uavcan::MaxCanIfaces], const uavcan::MonotonicTime blocking_deadlin) {
+uavcan::int16_t CanDriver::select(uavcan::CanSelectMasks &inout_masks, const uavcan::CanFrame * (& pending_tx)[uavcan::MaxCanIfaces], const uavcan::MonotonicTime blocking_deadline) {
     const uavcan::CanSelectMasks in_masks = inout_masks;
     const uavcan::MonotonicTime time = clock::getMonotonic();
 
@@ -182,7 +185,7 @@ uavcan::int16_t CanDriver::select(uavcan::CanSelectMasks &inout_masks, const uav
 
     {
         CriticalSectionLocker cs_locker;
-        if_.pollErrorFlagsFromISR();
+        // if_.pollErrorFlagsFromISR();
     }
 
     inout_masks = makeSelectMasks(pending_tx);          // Check if we already have some of the requested events
@@ -208,11 +211,11 @@ int CanDriver::init(const uavcan::uint32_t bitrate, const CanIface::OperatingMod
     }
 
     if (enabledInterface & 1) {
-        iface[0] = &if_;
+        iface = &if_;
         res = if_.init(bitrate, mode);
 
         if (res < 0) {
-            iface[0] = UAVCAN_NULLPTR;
+            iface = UAVCAN_NULLPTR;
             goto fail;
         }
     }
@@ -227,7 +230,7 @@ fail:
 
 CanIface *CanDriver::getIface(uavcan::uint8_t iface_index) {
     if (iface_index < UAVCAN_SG20XX_NUM_IFACES) {
-        return iface[iface_index];
+        return iface;
     }
 
     return UAVCAN_NULLPTR;

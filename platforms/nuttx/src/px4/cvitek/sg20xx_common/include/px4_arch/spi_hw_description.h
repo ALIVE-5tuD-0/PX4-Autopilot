@@ -57,6 +57,12 @@ struct bus_device_external_cfg_array_t {
     SPI::bus_device_external_cfg_t devices[SPI_BUS_MAX_DEVICES];
 };
 
+static inline constexpr SPI::bus_device_external_cfg_t initSPIConfigExternal(SPI::DRDY drdy_gpio = {}) {
+    SPI::bus_device_external_cfg_t ret{};
+    ret.drdy_gpio = drdy_gpio;
+    return ret;
+}
+
 static inline constexpr px4_spi_bus_t initSPIBusExternal(SPI::Bus bus, const bus_device_external_cfg_array_t &devices) {
     px4_spi_bus_t ret{};
 

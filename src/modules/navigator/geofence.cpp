@@ -322,12 +322,6 @@ bool Geofence::checkCurrentPositionRequirementsForGeofence(const PolygonInfo &po
 {
 	bool checks_pass = true;
 
-	// do not allow upload of geofence if vehicle is flying and current geofence would be immediately violated
-	if (getGeofenceAction() != geofence_result_s::GF_ACTION_NONE && !_navigator->get_land_detected()->landed) {
-		checks_pass = checkPointAgainstPolygonCircle(polygon, _navigator->get_global_position()->lat,
-				_navigator->get_global_position()->lon, _navigator->get_global_position()->alt);
-	}
-
 	if (!checks_pass) {
 		mavlink_log_critical(_navigator->get_mavlink_log_pub(), "Geofence invalid, doesn't contain current vehicle position\t");
 		events::send(events::ID("navigator_geofence_invalid_against_cur_pos"), {events::Log::Critical, events::LogInternal::Warning},

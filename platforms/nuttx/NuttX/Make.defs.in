@@ -64,6 +64,8 @@ ARCHINCLUDES += $(CINCPATH)
 ARCHXXINCLUDES += $(CINCPATH) $(CXXINCPATH)
 ARCHSCRIPT = -T$(BOARD_DIR)$(DELIM)scripts$(DELIM)flash.ld
 
+-include ${PX4_BOARD_DIR}/nuttx-config/scripts/Make.defs
+
 ifeq ($(CONFIG_BOARD_USE_PROBES),y)
    ARCHINCLUDES += -I $(TOPDIR)/arch/$(CONFIG_ARCH)/src/$(CONFIG_ARCH_CHIP) -I $(TOPDIR)/arch/$(CONFIG_ARCH)/src/common
    ARCHXXINCLUDES += -I $(TOPDIR)/arch/$(CONFIG_ARCH)/src/$(CONFIG_ARCH_CHIP) -I $(TOPDIR)/arch/$(CONFIG_ARCH)/src/common
@@ -130,6 +132,7 @@ CFLAGS = $(ARCHINCLUDES) \
 	-std=gnu11 \
 	${CMAKE_C_FLAGS} \
 	$(FLAGS) \
+	$(ARCHCPUFLAGS) \
 	-Wno-bad-function-cast \
 	-Wno-float-equal \
 	-Wno-implicit-fallthrough \
@@ -150,6 +153,7 @@ CXXFLAGS = $(ARCHXXINCLUDES) \
 	-nostdinc++ \
 	${CMAKE_CXX_FLAGS} \
 	$(FLAGS) \
+	$(ARCHCPUFLAGS) \
 	-fcheck-new \
 	-fno-builtin \
 	-fno-exceptions \

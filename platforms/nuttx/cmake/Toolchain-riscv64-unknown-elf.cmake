@@ -15,6 +15,11 @@ set(CMAKE_CXX_COMPILER_TARGET ${triple})
 
 set(CMAKE_ASM_COMPILER ${TOOLCHAIN_PREFIX}-gcc)
 
+set(cpu_flags "-march=rv64gc -mabi=lp64d -mcmodel=medany")
+set(CMAKE_C_FLAGS "${cpu_flags}" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS "${cpu_flags}" CACHE STRING "" FORCE)
+set(CMAKE_ASM_FLAGS "${cpu_flags} -D__ASSEMBLY__" CACHE STRING "" FORCE)
+
 # needed for test compilation
 set(CMAKE_EXE_LINKER_FLAGS_INIT "--specs=nosys.specs")
 

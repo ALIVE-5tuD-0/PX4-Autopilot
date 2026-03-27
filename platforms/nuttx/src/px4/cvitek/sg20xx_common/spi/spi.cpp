@@ -10,7 +10,6 @@
 
 #include <nuttx/spi/spi.h>
 #include <arch/board/board.h>
-#include <arm_internal.h>
 #include <chip.h>
 
 static const px4_spi_bus_t *_spi_bus2 = NULL;

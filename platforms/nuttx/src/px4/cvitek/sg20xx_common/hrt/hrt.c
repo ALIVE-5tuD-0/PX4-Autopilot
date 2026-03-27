@@ -81,6 +81,11 @@
 /* timer count at interrupt (for latency purposes) */
 // static uint16_t             latency_actual;
 
+/* latency histogram */
+const uint16_t latency_bucket_count = LATENCY_BUCKET_COUNT;
+const uint16_t latency_buckets[LATENCY_BUCKET_COUNT] = { 1, 2, 5, 10, 20, 50, 100, 1000 };
+__EXPORT uint32_t latency_counters[LATENCY_BUCKET_COUNT + 1];
+
 void hrt_init(void) {
     struct oneshot_lowerhalf_s *lower;
 
@@ -91,3 +96,35 @@ void hrt_init(void) {
 
     up_alarm_set_lowerhalf(lower);
 }
+
+hrt_abstime hrt_absolute_time(void) {
+    hrt_abstime	abstime = 0;
+
+    return abstime;
+}
+
+void hrt_cancel(struct hrt_call *entry) {
+
+}
+
+bool hrt_called(struct hrt_call *entry) {
+    return (entry->deadline == 0);
+}
+
+void hrt_store_absolute_time(volatile hrt_abstime *t) {
+    irqstate_t flags = px4_enter_critical_section();
+    *t = hrt_absolute_time();
+    px4_leave_critical_section(flags);
+}
+
+void hrt_call_after(struct hrt_call *entry, hrt_abstime delay, hrt_callout callout, void *arg) {
+
+}
+
+void hrt_call_every(struct hrt_call *entry, hrt_abstime delay, hrt_abstime interval, hrt_callout callout, void *arg) {
+
+}
+
+
+
+

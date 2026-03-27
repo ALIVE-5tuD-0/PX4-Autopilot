@@ -3,9 +3,7 @@
 #include <nuttx/spi/spi.h>
 
 constexpr px4_spi_bus_t px4_spi_buses[SPI_BUS_MAX_BUS_ITEMS] = {
-    initSPIBusExternal(SPI::Bus::SPI6, {
-        initSPIConfigExternal(SPI::DRDY{GPIO::PortD, GPIO::Pin11}),
+    initSPIBusExternal(SPI::Bus::SPI2, {
+        initSPIConfigExternal(SPI::DRDY{GPIO::PortA, GPIO::Pin15}),
     }),
 };
-
-static constexpr bool unused = validateSPIConfig(px4_spi_buses);

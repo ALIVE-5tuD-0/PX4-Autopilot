@@ -135,7 +135,6 @@ public:
 	bool isEmpty() { return (!_fence_updated || (_num_polygons == 0)); }
 
 	int getSource() { return _param_gf_source.get(); }
-	int getGeofenceAction() { return _param_gf_action.get(); }
 
 	float getMaxHorDistanceHome() { return _param_gf_max_hor_dist.get(); }
 	bool getPredict() { return _param_gf_predict.get(); }
@@ -227,7 +226,6 @@ private:
 	bool checkCurrentPositionRequirementsForGeofence(const PolygonInfo &polygon);
 
 	DEFINE_PARAMETERS(
-		(ParamInt<px4::params::GF_ACTION>)         _param_gf_action,
 		(ParamInt<px4::params::GF_SOURCE>)         _param_gf_source,
 		(ParamFloat<px4::params::GF_MAX_HOR_DIST>) _param_gf_max_hor_dist,
 		(ParamFloat<px4::params::GF_MAX_VER_DIST>) _param_gf_max_ver_dist,
