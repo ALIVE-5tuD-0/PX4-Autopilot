@@ -67,24 +67,6 @@ void EstimatorChecks::checkAndReport(const Context &context, Report &reporter)
 	bool missing_data = false;
 	const NavModes required_groups = (NavModes)reporter.failsafeFlags().mode_req_attitude;
 
-	// Change topics to primary estimator instance
-	if (_param_sens_imu_mode.get() == 0) { // multi-ekf
-		estimator_selector_status_s estimator_selector_status;
-
-		if (_estimator_selector_status_sub.copy(&estimator_selector_status)) {
-			bool instance_changed = _estimator_status_sub.ChangeInstance(estimator_selector_status.primary_instance)
-						&& _estimator_sensor_bias_sub.ChangeInstance(estimator_selector_status.primary_instance)
-						&& _estimator_status_flags_sub.ChangeInstance(estimator_selector_status.primary_instance);
-
-			if (!instance_changed) {
-				missing_data = true;
-			}
-
-		} else {
-			missing_data = true;
-		}
-	}
-
 	if (!missing_data) {
 		estimator_status_s estimator_status;
 

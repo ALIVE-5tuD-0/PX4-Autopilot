@@ -108,7 +108,6 @@ private:
 	bool _nav_failure_imminent_warned{false};
 
 	DEFINE_PARAMETERS_CUSTOM_PARENT(HealthAndArmingCheckBase,
-					(ParamInt<px4::params::SENS_IMU_MODE>) _param_sens_imu_mode,
 					(ParamInt<px4::params::COM_ARM_MAG_STR>) _param_com_arm_mag_str,
 					(ParamInt<px4::params::COM_ARM_WO_GPS>) _param_com_arm_wo_gps,
 					(ParamBool<px4::params::SYS_HAS_GPS>) _param_sys_has_gps,
