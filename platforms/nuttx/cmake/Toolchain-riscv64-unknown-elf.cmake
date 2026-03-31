@@ -15,7 +15,7 @@ set(CMAKE_CXX_COMPILER_TARGET ${triple})
 
 set(CMAKE_ASM_COMPILER ${TOOLCHAIN_PREFIX}-gcc)
 
-set(cpu_flags "-march=rv64gc -mabi=lp64d -mcmodel=medany")
+set(cpu_flags "-O2 -march=rv64imac -mabi=lp64 -ffunction-sections -fdata-sections -Wl,--gc-sections -g -Wall -Wextra -nostdlib -mcmodel=medany")
 set(CMAKE_C_FLAGS "${cpu_flags}" CACHE STRING "" FORCE)
 set(CMAKE_CXX_FLAGS "${cpu_flags}" CACHE STRING "" FORCE)
 set(CMAKE_ASM_FLAGS "${cpu_flags} -D__ASSEMBLY__" CACHE STRING "" FORCE)
