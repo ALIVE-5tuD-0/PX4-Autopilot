@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2021 PX4 Development Team. All rights reserved.
+ *   Copyright (C) 2020 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,45 +31,12 @@
  *
  ****************************************************************************/
 
-/**
- * @file board_config.h
- *
- * board internal definitions
- */
+#include <nuttx/config.h>
+#include <board_config.h>
 
-#pragma once
+#include <nuttx/spi/spi.h>
+#include <px4_platform_common/px4_manifest.h>
 
-/****************************************************************************************************
- * Included Files
- ****************************************************************************************************/
-
-#include <px4_platform_common/px4_config.h>
-#include <nuttx/compiler.h>
-#include <stdint.h>
-
-// Define this as empty since there are no I2C buses
-#define BOARD_I2C_BUS_CLOCK_INIT
-
-/* High-resolution timer */
-#define RC_SERIAL_PORT               "/dev/ttyS3"
-#define BOARD_SUPPORTS_RC_SERIAL_PORT_OUTPUT
-
-#define BOARD_ENABLE_CONSOLE_BUFFER
-#define BOARD_CONSOLE_BUFFER_SIZE (1024*3)
-
-#define BOARD_SPI_BUS_MAX_BUS_ITEMS 1
-
-// Has pwm outputs
-#define BOARD_HAS_PWM    0
-
-#define BOARD_NUMBER_DIGITAL_BRICKS
-
-__BEGIN_DECLS
-
-#ifndef __ASSEMBLY__
-
-#include <px4_platform_common/board_common.h>
-
-#endif /* __ASSEMBLY__ */
-
-__END_DECLS
+const px4_mft_s *board_get_manifest(void) {
+    return NULL;
+}

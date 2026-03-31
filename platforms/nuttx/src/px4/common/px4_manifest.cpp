@@ -87,6 +87,7 @@ __EXPORT int px4_mft_configure(const px4_mft_s *mft)
 		}
 	}
 
+	// sg2002_trace_dirout("mft configure done\n");
 	return 0;
 }
 

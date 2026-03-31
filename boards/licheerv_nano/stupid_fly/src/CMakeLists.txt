@@ -34,6 +34,7 @@
 add_library(drivers_board
 	init.c
 	can.c
+	mtd.cpp
 	spi.cpp
 )
 

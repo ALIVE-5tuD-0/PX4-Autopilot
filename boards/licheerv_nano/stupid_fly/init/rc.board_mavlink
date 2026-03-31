@@ -4,4 +4,4 @@
 #------------------------------------------------------------------------------
 
 # Start MAVLink on the mailbox transmit to Linux Core
-mavlink start -d /dev/ttyACM0
+# mavlink start -d /dev/ttyACM0

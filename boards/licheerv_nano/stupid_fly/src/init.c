@@ -118,26 +118,6 @@ void sg2002_boardearlyinitialize(void)
 
 }
 
-/************************************************************************************
- * Name: sg2002_boardinitialize
- *
- * Description:
- *   All architectures must provide the following entry point. This entry point
- *   is called early in the initialization -- after all memory has been configured
- *   and mapped but before any devices have been initialized.
- *
- ************************************************************************************/
-
-__EXPORT void
-sg2002_boardinitialize(void)
-{
-	// /* configure LEDs */
-	board_autoled_initialize();
-
-	sg2002_spi_initialize();
-
-}
-
 /****************************************************************************
  * Name: board_app_initialize
  *
@@ -163,31 +143,17 @@ sg2002_boardinitialize(void)
  *
  ****************************************************************************/
 
-// static struct spi_dev_s *spi1;
-static struct spi_dev_s *spi2;
+__EXPORT int board_app_initialize(uintptr_t arg) {
+	sg2002_trace_dirout("StupidFLY app initialize start\n");
 
-__EXPORT int board_app_initialize(uintptr_t arg)
-{
 	px4_platform_init();
 
-	/* Configure SPI-based devices */
-
-	// SPI2: MPU9250 and BMP280
-	spi2 = sg2002_spibus_initialize(PX4_BUS_NUMBER_FROM_PX4(2));
-
-	if (!spi2) {
-		syslog(LOG_ERR, "[boot] FAILED to initialize SPI port 2\n");
-	}
-
-	/* Default SPI2 to 10MHz and de-assert the known chip selects. */
-	SPI_SETFREQUENCY(spi2, 10000000);
-	SPI_SETBITS(spi2, 8);
-	SPI_SETMODE(spi2, SPIDEV_MODE3);
 	up_udelay(20);
 
 	/* Configure the HW based on the manifest */
-
 	px4_platform_configure();
+
+	sg2002_trace_dirout("StupidFLY app initialize end\n");
 
 	return OK;
 }

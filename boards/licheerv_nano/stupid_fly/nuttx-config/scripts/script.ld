@@ -25,6 +25,8 @@ MEMORY
 }
 
 OUTPUT_ARCH("riscv")
+EXTERN(board_get_manifest)
+EXTERN(sg2002_trace_dirout)
 
 SECTIONS
 {
