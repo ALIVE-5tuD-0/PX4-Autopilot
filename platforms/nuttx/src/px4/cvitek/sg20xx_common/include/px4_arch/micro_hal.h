@@ -4,9 +4,7 @@
 
 __BEGIN_DECLS
 
-#include <sg2002_spi.h>
-#include <sg2002_timer.h>
-#include <sg2002_gpio.h>
+#include <sg200x.h>
 
 #define PX4_CPU_UUID_BYTE_LENGTH                    	12
 #define PX4_CPU_UUID_WORD32_LENGTH                  	(PX4_CPU_UUID_BYTE_LENGTH / sizeof(uint32_t))
